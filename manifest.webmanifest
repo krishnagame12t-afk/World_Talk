@@ -1,0 +1,14 @@
+{
+  "id": "./",
+  "name": "WorldTalk — Language-friendly chat",
+  "short_name": "WorldTalk",
+  "description": "Chat with people while reading messages in your preferred language.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f8f3",
+  "theme_color": "#16845f",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
