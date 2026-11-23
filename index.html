@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8f3">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="WorldTalk">
+  <title>WorldTalk — Say it your way</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <style>
+    :root { color-scheme: light; --ink:#172824; --muted:#687873; --green:#1a8c68; --deep:#14654f; --line:#e3e9e3; --paper:#fff; --wash:#f7f8f3; }
+    * { box-sizing:border-box }
+    body { margin:0; min-height:100vh; background:var(--wash); color:var(--ink); font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+    button,input { font:inherit }
+    .shell { min-height:100vh; max-width:1180px; margin:auto; padding:28px 42px 32px; display:flex; flex-direction:column }
+    header { display:flex; align-items:center; justify-content:space-between }
+    .brand { display:flex; gap:11px; align-items:center; font-weight:760; font-size:19px; letter-spacing:-.5px }
+    .mark { width:38px; height:38px; display:grid; place-items:center; border-radius:13px; color:white; background:var(--green); box-shadow:0 5px 12px #1a8c6829 }
+    .mark svg { width:22px; height:22px }
+    .header-note { color:var(--muted); font-size:13px }
+    main { flex:1; display:grid; grid-template-columns:1fr 1fr; align-items:center; gap:60px; padding:54px 0 48px }
+    .copy { max-width:490px }
+    .eyebrow { display:inline-flex; align-items:center; gap:8px; color:var(--deep); font-size:12px; font-weight:750; text-transform:uppercase; letter-spacing:1.3px }
+    .eyebrow i { width:7px; height:7px; border-radius:50%; background:#e8a441 }
+    h1 { margin:18px 0 18px; max-width:500px; font-size:clamp(46px,6.2vw,76px); line-height:.99; letter-spacing:-4.5px; font-weight:760 }
+    h1 span { color:var(--green) }
+    .intro { max-width:440px; margin:0; color:var(--muted); font-size:17px; line-height:1.7 }
+    .actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:30px }
+    .button { min-height:50px; border:0; border-radius:14px; padding:0 23px; font-weight:700; cursor:pointer; transition:transform .16s,box-shadow .16s,background .16s }
+    .button:hover { transform:translateY(-1px) }
+    .button:focus-visible { outline:3px solid #80c9ad; outline-offset:3px }
+    .google-button { display:inline-flex; align-items:center; justify-content:center; gap:10px; min-width:220px }
+    .google-mark { width:19px; height:19px; border-radius:50%; background:#fff; display:grid; place-items:center; color:#4285f4; font-weight:800; font-size:14px }
+    .signin-link { display:block; margin-top:16px; padding:0; border:0; background:transparent; color:var(--deep); text-decoration:underline; text-underline-offset:3px; font-size:13px; font-weight:650; cursor:pointer }
+    .primary { color:white; background:var(--green); box-shadow:0 8px 18px #1a8c682c }
+    .primary:hover { background:var(--deep) }
+    .secondary { color:var(--ink); background:white; border:1px solid var(--line) }
+    .fineprint { color:#82908a; font-size:12px; margin:18px 0 0 }
+    .preview-note { margin-top:20px; padding:14px 16px; border:1px solid #d8e9df; border-radius:14px; background:#f1f8f3; color:#4d6558; font-size:13px; line-height:1.55 }
+    .preview-note strong { display:block; margin-bottom:3px; color:#195b42 }
+    .visual { min-height:470px; display:grid; place-items:center; position:relative }
+    .orb { position:absolute; width:360px; height:360px; border-radius:50%; background:#e8f1e8; right:3%; top:11% }
+    .phone { position:relative; width:min(320px,88%); padding:13px; border:1px solid #e0e7e1; border-radius:34px; background:#fff; box-shadow:0 24px 70px #243c3020; transform:rotate(1.5deg) }
+    .phone-screen { min-height:425px; padding:16px 14px; border-radius:23px; background:#f4f7f2 }
+    .chat-head { display:flex; align-items:center; gap:10px; padding:2px 2px 15px; border-bottom:1px solid #e4eae3 }
+    .avatar { width:36px; height:36px; display:grid; place-items:center; border-radius:50%; background:#f3d9bd; color:#6b4735; font-size:12px; font-weight:800 }
+    .person { font-size:13px; font-weight:750 }
+    .online { margin-top:3px; color:#77867f; font-size:10px }
+    .online:before { content:""; display:inline-block; width:6px; height:6px; margin-right:5px; border-radius:50%; background:#44b887 }
+    .bubble { width:88%; padding:10px 12px; margin-top:16px; border-radius:14px 14px 14px 4px; background:white; box-shadow:0 2px 6px #152a1c08 }
+    .bubble.mine { margin:12px 0 0 auto; border-radius:14px 14px 4px 14px; background:#dff2e5 }
+    .bubble p { margin:0; font-size:12px; line-height:1.45 }
+    .translated { color:#1b4e3d; font-weight:600 }
+    .original { margin-top:6px!important; padding-top:6px; border-top:1px solid #e9eeea; color:#7b8982; font-size:10px!important }
+    .caption { color:#89958e; font-size:9px; margin-top:7px; text-align:right }
+    .composer { display:flex; align-items:center; justify-content:space-between; margin-top:43px; padding:9px 11px; border:1px solid #e6ebe5; border-radius:14px; background:white; color:#9aa59e; font-size:10px }
+    .send { width:25px; height:25px; display:grid; place-items:center; border-radius:9px; background:var(--green); color:#fff; font-size:12px }
+    footer { display:flex; justify-content:space-between; gap:14px; color:#8a9690; font-size:11px }
+    .auth-wrap { position:fixed; inset:0; z-index:3; display:none; place-items:center; padding:20px; background:#10241cc9; backdrop-filter:blur(5px) }
+    .auth-wrap.open { display:grid }
+    .auth { width:min(420px,100%); max-height:92vh; overflow:auto; padding:28px; border-radius:24px; background:white; box-shadow:0 30px 100px #0004 }
+    .auth-top { display:flex; justify-content:space-between; align-items:center }
+    .auth h2 { margin:24px 0 7px; font-size:27px; letter-spacing:-1px }
+    .auth p { margin:0; color:var(--muted); font-size:14px; line-height:1.5 }
+    .close { width:34px; height:34px; border:0; border-radius:50%; background:#f1f4f0; cursor:pointer; font-size:18px; color:#51615a }
+    .methods { display:flex; gap:8px; margin:22px 0 16px; padding:4px; border-radius:12px; background:#f2f5f1 }
+    .method { flex:1; min-height:38px; border:0; border-radius:9px; background:transparent; color:#64736b; font-size:13px; font-weight:650; cursor:pointer }
+    .method.active { color:var(--ink); background:#fff; box-shadow:0 1px 5px #17302214 }
+    label { display:block; margin:12px 0 7px; color:#42534b; font-size:12px; font-weight:700 }
+    .field { width:100%; height:47px; padding:0 13px; border:1px solid var(--line); border-radius:11px; outline:none }
+    .field:focus { border-color:#69b494; box-shadow:0 0 0 3px #dff2e8 }
+    .phone-row { display:flex; gap:9px; align-items:center }
+    .country-code { flex:0 0 112px }
+    .phone-number { min-width:0 }
+    .auth-submit { width:100%; margin-top:20px }
+    .notice { min-height:18px; margin-top:12px!important; color:var(--deep)!important; font-size:12px!important }
+    .code-timer { margin-top:14px; padding:12px; border:1px solid var(--line); border-radius:12px; background:#f8faf7; text-align:center }
+    .code-timer p { margin:0; color:#53665d; font-size:12px }
+    .resend { margin-top:8px; padding:6px 10px; border:0; background:transparent; color:var(--green); font-size:12px; font-weight:700; cursor:pointer }
+    .resend:disabled { color:#8a9690; cursor:default }
+    @media (max-width:760px) { .shell { padding:20px 22px 22px } main { grid-template-columns:1fr; gap:12px; padding:56px 0 20px } .copy { margin:auto; text-align:center } h1 { margin-left:auto; margin-right:auto; letter-spacing:-3px } .intro { margin:auto; font-size:15px } .eyebrow { justify-content:center } .actions { justify-content:center; margin-top:24px } .fineprint { margin-top:13px } .visual { min-height:390px } .orb { width:290px; height:290px; top:10% } .phone { width:285px } .phone-screen { min-height:388px } .composer { margin-top:26px } footer { flex-direction:column; align-items:center; text-align:center } }
+    @media (prefers-reduced-motion:reduce) { *,*:before,*:after { scroll-behavior:auto!important; transition:none!important } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand"><span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7"/><path d="M3.8 12h16.4M12 3.5c2.2 2.3 3.3 5.1 3.3 8.5s-1.1 6.2-3.3 8.5c-2.2-2.3-3.3-5.1-3.3-8.5S9.8 5.8 12 3.5Z" stroke="currentColor" stroke-width="1.5"/><path d="m16.7 16.7 4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>WorldTalk</div>
+      <div class="header-note">A little closer, in every language.</div>
+    </header>
+    <main>
+      <section class="copy" aria-labelledby="title">
+        <div class="eyebrow"><i></i> Your conversations, understood</div>
+        <h1 id="title">Say it your way.<br><span>Hear it theirs.</span></h1>
+        <p class="intro">Stay close to your people, wherever they are. Send messages in your language and read them in the one you love.</p>
+        <div class="actions">
+          <button class="button primary" id="openChatPreview" type="button">Open chat preview</button>
+          <button class="button secondary google-button" id="googleSignIn"><span class="google-mark" aria-hidden="true">G</span>Continue with Google</button>
+          <button class="button primary" data-mode="create">Continue with email</button>
+        </div>
+        <button class="signin-link" data-mode="signin">Already have an account? Sign in</button>
+        <div class="preview-note"><strong>Building WorldTalk without sign-in for now</strong>Open a private preview on this device. Messages here are sample data and are not sent to anyone.</div>
+        <p class="fineprint">Google confirms your email. Everyone must verify a mobile number before entering chats.</p>
+      </section>
+      <section class="visual" aria-label="WorldTalk conversation preview">
+        <div class="orb" aria-hidden="true"></div>
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="chat-head"><div class="avatar">AM</div><div><div class="person">Aarav Mehta</div><div class="online">online</div></div></div>
+            <div class="bubble"><p class="translated">That sounds wonderful! Let's meet this weekend.</p><p class="original">¡Eso suena maravilloso! Nos vemos este fin de semana.</p><div class="caption">Translation · Spanish</div></div>
+            <div class="bubble mine"><p>¡Sí! ¿El sábado por la tarde?</p><div class="caption">Sent · Read</div></div>
+            <div class="bubble"><p class="translated">Yes! Saturday afternoon?</p><p class="original">Original message</p><div class="caption">Translation · English</div></div>
+            <div class="composer"><span>Write a message…</span><span class="send" aria-hidden="true">↑</span></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer><span>WorldTalk · Stay connected across languages</span><span>English · Change language later in setup</span></footer>
+  </div>
+
+  <div class="auth-wrap" id="authWrap" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <section class="auth">
+      <div class="auth-top"><div class="brand"><span class="mark" aria-hidden="true">W</span>WorldTalk</div><button class="close" id="closeAuth" aria-label="Close">×</button></div>
+      <h2 id="authTitle">Create your account</h2>
+      <p id="authDescription">Create an account with an email address and mobile number. Both must be verified.</p>
+      <div id="authFields"></div>
+      <p class="notice" id="notice" aria-live="polite"></p>
+    </section>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script>
+    const wrap = document.getElementById('authWrap');
+    const title = document.getElementById('authTitle');
+    const description = document.getElementById('authDescription');
+    const authFields = document.getElementById('authFields');
+    const notice = document.getElementById('notice');
+    const supabaseConfig = window.WORLDTALK_CONFIG || {};
+    const authStorageKey = 'worldtalk-auth-session';
+    const supabaseClient = supabaseConfig.supabaseUrl && supabaseConfig.publishableKey && window.supabase?.createClient
+      ? window.supabase.createClient(supabaseConfig.supabaseUrl, supabaseConfig.publishableKey)
+      : null;
+    let mode = 'create';
+    let accountStep = 'details';
+    let signupEmail = '';
+    let signupCountryCode = '';
+    let signupPhone = '';
+    let verificationTimer = null;
+    let verificationDeadline = 0;
+    function requireSupabaseConfig() {
+      if (!supabaseConfig.supabaseUrl || !supabaseConfig.publishableKey) {
+        throw new Error('Supabase is not connected yet. Add the project URL and publishable key in supabase-config.js.');
+      }
+    }
+    async function callEdgeFunction(name, payload) {
+      requireSupabaseConfig();
+      const baseUrl = supabaseConfig.supabaseUrl.replace(/\/$/, '');
+      const headers = { apikey: supabaseConfig.publishableKey, 'Content-Type': 'application/json' };
+      const { data: sessionData } = supabaseClient ? await supabaseClient.auth.getSession() : { data: {} };
+      if (sessionData?.session?.access_token) headers.Authorization = `Bearer ${sessionData.session.access_token}`;
+      const response = await fetch(`${baseUrl}/functions/v1/${name}`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const error = new Error(result.error || 'The verification service could not complete the request.');
+        error.retryAfterSeconds = result.retryAfterSeconds;
+        throw error;
+      }
+      return result;
+    }
+    async function signInWithWorldTalk(email, password) {
+      requireSupabaseConfig();
+      const baseUrl = supabaseConfig.supabaseUrl.replace(/\/$/, '');
+      const response = await fetch(`${baseUrl}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: { apikey: supabaseConfig.publishableKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.msg || result.message || 'Sign-in failed. Check your email and password.');
+      if (!result.user?.email_confirmed_at || !result.user?.phone_confirmed_at) {
+        throw new Error('Verify both your email and mobile number before entering WorldTalk.');
+      }
+      window.WORLDTALK_SESSION = result;
+      sessionStorage.setItem(authStorageKey, JSON.stringify({
+        access_token: result.access_token,
+        refresh_token: result.refresh_token,
+        expires_at: result.expires_at || Math.floor(Date.now() / 1000) + (result.expires_in || 3600),
+      }));
+      return result;
+    }
+    function openSignedInChatPreview() {
+      window.location.href = 'chat-demo.html?preview=1';
+    }
+    document.getElementById('openChatPreview').addEventListener('click', openSignedInChatPreview);
+    function showGoogleSetup(message) {
+      mode = 'google-setup';
+      title.textContent = 'Google sign-in';
+      description.textContent = message;
+      notice.textContent = '';
+      renderAuthForm();
+      wrap.classList.add('open');
+    }
+    function openEmailMode(nextMode) {
+      mode = nextMode;
+      accountStep = 'details';
+      title.textContent = mode === 'create' ? 'Create your account' : 'Welcome back';
+      notice.textContent = '';
+      renderAuthForm();
+      authFields.querySelector('input')?.focus();
+    }
+    function saveAuthSession(session) {
+      if (!session?.access_token) return;
+      sessionStorage.setItem(authStorageKey, JSON.stringify({
+        access_token: session.access_token,
+        refresh_token: session.refresh_token,
+        expires_at: session.expires_at || Math.floor(Date.now() / 1000) + (session.expires_in || 3600),
+      }));
+    }
+    async function continueWithGoogle() {
+      if (window.location.protocol === 'file:') {
+        showGoogleSetup('This page was opened as a local file, so Google cannot return here after sign-in. Open WorldTalk at http://127.0.0.1:4173, then try Google again.');
+        return;
+      }
+      if (!supabaseClient) {
+        showGoogleSetup('Google sign-in needs Supabase setup first. No email or phone details are needed on this screen.');
+        return;
+      }
+      try {
+        const settingsUrl = supabaseConfig.supabaseUrl.replace(/\/$/, '') + '/auth/v1/settings';
+        const settingsResponse = await fetch(settingsUrl, { headers: { apikey: supabaseConfig.publishableKey } });
+        const settings = await settingsResponse.json().catch(() => ({}));
+        if (settingsResponse.ok && settings.external && settings.external.google === false) {
+          showGoogleSetup('Google is not enabled in Supabase yet. Enable the Google provider first, then try again. No email or phone details are needed here.');
+          return;
+        }
+        notice.textContent = 'Opening Google sign-in…';
+        const { error } = await supabaseClient.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: window.location.origin + window.location.pathname },
+        });
+        if (error) throw error;
+      } catch {
+        showGoogleSetup('Google sign-in could not start. Check that Google is enabled in Supabase and this website URL is in its redirect allow-list. No email or phone details are needed here.');
+      }
+    }
+    function beginGooglePhoneSetup() {
+      mode = 'google-phone';
+      accountStep = 'phone-details';
+      title.textContent = 'Verify your mobile number';
+      notice.textContent = '';
+      renderAuthForm();
+      wrap.classList.add('open');
+    }
+    function startVerificationTimer(existingDeadline = 0) {
+      if (verificationTimer) clearInterval(verificationTimer);
+      verificationDeadline = existingDeadline || Date.now() + 5 * 60 * 1000;
+      const countdown = document.getElementById('codeCountdown');
+      const resend = document.getElementById('resendCodes');
+      if (!countdown || !resend) return;
+      const updateTimer = () => {
+        const remaining = Math.max(0, Math.ceil((verificationDeadline - Date.now()) / 1000));
+        const minutes = String(Math.floor(remaining / 60)).padStart(2, '0');
+        const seconds = String(remaining % 60).padStart(2, '0');
+        if (remaining === 0) {
+          countdown.textContent = 'Code entry time expired. Request new codes.';
+          resend.disabled = false;
+          resend.textContent = 'Resend both codes';
+          document.querySelectorAll('#emailCode, #phoneCode').forEach((input) => { input.disabled = true; });
+          const verifyButton = document.querySelector('#authForm .auth-submit');
+          if (verifyButton) verifyButton.disabled = true;
+          clearInterval(verificationTimer);
+          verificationTimer = null;
+        } else {
+          countdown.textContent = `Enter both codes within ${minutes}:${seconds}`;
+          resend.disabled = true;
+          resend.textContent = `Resend available in ${minutes}:${seconds}`;
+          document.querySelectorAll('#emailCode, #phoneCode').forEach((input) => { input.disabled = false; });
+          const verifyButton = document.querySelector('#authForm .auth-submit');
+          if (verifyButton) verifyButton.disabled = false;
+        }
+      };
+      updateTimer();
+      verificationTimer = setInterval(updateTimer, 1000);
+    }
+    function renderAuthForm() {
+      if (mode === 'google-setup') {
+        authFields.innerHTML = '<div class="actions" style="margin-top:18px"><button class="button primary" id="emailCreate" type="button">Create account with email</button><button class="button secondary" id="emailSignIn" type="button">Sign in with email</button></div>';
+        document.getElementById('emailCreate').addEventListener('click', () => openEmailMode('create'));
+        document.getElementById('emailSignIn').addEventListener('click', () => openEmailMode('signin'));
+      } else if (mode === 'google-phone') {
+        if (accountStep === 'phone-details') {
+          description.textContent = 'Your Google email is confirmed. Verify your mobile number by SMS before entering WorldTalk chats.';
+          authFields.innerHTML = `<form id="authForm">
+            <label for="signupCountryCode">Country calling code</label><input class="field" id="signupCountryCode" name="countryCode" type="tel" inputmode="tel" autocomplete="tel-country-code" placeholder="+91" pattern="\+[0-9]{1,4}" maxlength="5" required>
+            <label for="signupPhone">10-digit mobile number</label><input class="field" id="signupPhone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="10-digit mobile number" pattern="[0-9]{10}" minlength="10" maxlength="10" required>
+            <button class="button primary auth-submit" type="submit">Send SMS code</button>
+          </form>`;
+        } else {
+          description.textContent = `Enter the six-digit SMS code sent to ${signupCountryCode}${signupPhone}. It expires in 5 minutes.`;
+          authFields.innerHTML = `<form id="authForm">
+            <label for="phoneCode">SMS verification code</label><input class="field" id="phoneCode" name="phoneCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="6-digit SMS code" required>
+            <div class="code-timer"><p id="codeCountdown" aria-live="polite">Enter the code within 05:00</p><button class="resend" id="resendCodes" type="button" disabled>Resend available in 05:00</button></div>
+            <button class="button primary auth-submit" type="submit">Verify phone and continue</button>
+            <button class="method" id="editContacts" type="button">Change mobile number</button>
+          </form>`;
+          document.getElementById('editContacts').addEventListener('click', () => { if (verificationTimer) clearInterval(verificationTimer); verificationTimer = null; accountStep = 'phone-details'; notice.textContent = ''; renderAuthForm(); });
+          document.getElementById('resendCodes').addEventListener('click', async () => {
+            const button = document.getElementById('resendCodes'); button.disabled = true; notice.textContent = 'Requesting a new SMS code…';
+            try { await callEdgeFunction('request-google-phone-code', { phone: `${signupCountryCode}${signupPhone}` }); document.getElementById('phoneCode').value = ''; startVerificationTimer(); notice.textContent = 'A new code was accepted for delivery.'; }
+            catch (error) { button.disabled = false; notice.textContent = error.message; }
+          });
+        }
+      } else if (mode === 'create') {
+        if (accountStep === 'details') {
+          description.textContent = 'Enter both contact methods. WorldTalk will require an email code and an SMS code before creating your account.';
+          authFields.innerHTML = `<form id="authForm">
+            <label for="signupEmail">Email address</label><input class="field" id="signupEmail" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+            <label for="signupCountryCode">Mobile number</label>
+            <div class="phone-row"><input class="field country-code" id="signupCountryCode" name="countryCode" type="tel" inputmode="tel" autocomplete="tel-country-code" placeholder="+91" pattern="\+[0-9]{1,4}" maxlength="5" aria-label="Country calling code, for example plus 91" required><input class="field phone-number" id="signupPhone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="10-digit mobile number" pattern="[0-9]{10}" minlength="10" maxlength="10" aria-describedby="phoneHint" required></div>
+            <small id="phoneHint" style="display:block;margin-top:6px;color:#77867f;font-size:11px">Enter your country calling code (for example, +91), then exactly 10 mobile digits.</small>
+            <button class="button primary auth-submit" type="submit">Continue to verification</button>
+          </form>`;
+        } else {
+          description.textContent = `Separate email and SMS codes are required for ${signupEmail} and ${signupCountryCode}${signupPhone}. In the live app, both codes expire after 5 minutes.`;
+          authFields.innerHTML = `<form id="authForm">
+            <label for="emailCode">Email verification code</label><input class="field" id="emailCode" name="emailCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="6-digit email code" required>
+            <label for="phoneCode">SMS verification code</label><input class="field" id="phoneCode" name="phoneCode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="6-digit SMS code" required>
+            <div class="code-timer"><p id="codeCountdown" aria-live="polite">Enter both codes within 05:00</p><button class="resend" id="resendCodes" type="button" disabled>Resend available in 05:00</button></div>
+            <label for="signupPassword">Create a password</label><input class="field" id="signupPassword" name="password" type="password" autocomplete="new-password" placeholder="At least 8 characters" minlength="8" maxlength="72" required>
+            <button class="button primary auth-submit" type="submit">Verify both and create account</button>
+            <button class="method" id="editContacts" type="button">Change email or mobile number</button>
+          </form>`;
+          document.getElementById('editContacts').addEventListener('click', () => { if (verificationTimer) clearInterval(verificationTimer); verificationTimer = null; verificationDeadline = 0; accountStep = 'details'; notice.textContent = ''; renderAuthForm(); });
+          document.getElementById('resendCodes').addEventListener('click', async () => {
+            const button = document.getElementById('resendCodes');
+            button.disabled = true;
+            notice.textContent = 'Requesting new codes…';
+            try {
+              await callEdgeFunction('request-signup-codes', { email: signupEmail, phone: `${signupCountryCode}${signupPhone}` });
+              document.getElementById('emailCode').value = '';
+              document.getElementById('phoneCode').value = '';
+              startVerificationTimer();
+              notice.textContent = 'New verification codes were accepted for delivery. Enter both within 5 minutes.';
+            } catch (error) {
+              button.disabled = false;
+              notice.textContent = error.message;
+            }
+          });
+        }
+      } else {
+        description.textContent = 'Sign in with an account that has verified both its email and mobile number.';
+        authFields.innerHTML = `<form id="authForm">
+          <label for="identity">Email address</label>
+          <input class="field" id="identity" name="identity" type="email" autocomplete="email" placeholder="you@example.com" required>
+          <label for="signinPassword">Password</label><input class="field" id="signinPassword" name="password" type="password" autocomplete="current-password" required>
+          <button class="button primary auth-submit" type="submit">Sign in</button>
+        </form>`;
+      }
+      const activeForm = document.getElementById('authForm');
+      if (activeForm) activeForm.addEventListener('submit', handleAuthSubmit);
+      const phoneInput = document.getElementById('signupPhone');
+      if (phoneInput) phoneInput.addEventListener('input', () => { phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10); });
+      const countryCodeInput = document.getElementById('signupCountryCode');
+      if (countryCodeInput) countryCodeInput.addEventListener('input', () => {
+        const digits = countryCodeInput.value.replace(/\D/g, '').slice(0, 4);
+        countryCodeInput.value = digits ? `+${digits}` : '';
+      });
+      document.querySelectorAll('#emailCode, #phoneCode').forEach((input) => {
+        input.addEventListener('input', () => { input.value = input.value.replace(/\D/g, '').slice(0, 6); });
+      });
+    }
+    async function handleAuthSubmit(event) {
+      event.preventDefault();
+      const submitButton = event.currentTarget.querySelector('.auth-submit');
+      submitButton.disabled = true;
+      if (mode === 'google-phone' && accountStep === 'phone-details') {
+        signupCountryCode = document.getElementById('signupCountryCode').value;
+        signupPhone = document.getElementById('signupPhone').value;
+        notice.textContent = 'Sending an SMS verification code…';
+        try {
+          await callEdgeFunction('request-google-phone-code', { phone: `${signupCountryCode}${signupPhone}` });
+          accountStep = 'phone-code'; renderAuthForm(); startVerificationTimer();
+          notice.textContent = 'Code accepted for delivery. Enter it within 5 minutes.';
+        } catch (error) { submitButton.disabled = false; notice.textContent = error.message; }
+      } else if (mode === 'google-phone') {
+        const phoneCode = document.getElementById('phoneCode').value;
+        notice.textContent = 'Checking your SMS code…';
+        try {
+          await callEdgeFunction('verify-google-phone', { phone: `${signupCountryCode}${signupPhone}`, phoneCode });
+          if (verificationTimer) clearInterval(verificationTimer); verificationTimer = null;
+          const { data } = await supabaseClient.auth.refreshSession();
+          saveAuthSession(data.session); openSignedInChatPreview();
+        } catch (error) { submitButton.disabled = false; notice.textContent = error.message; }
+      } else if (mode === 'create' && accountStep === 'details') {
+        signupEmail = document.getElementById('signupEmail').value.trim();
+        signupCountryCode = document.getElementById('signupCountryCode').value;
+        signupPhone = document.getElementById('signupPhone').value;
+        notice.textContent = 'Sending one code to your email and another to your phone…';
+        try {
+          await callEdgeFunction('request-signup-codes', { email: signupEmail, phone: `${signupCountryCode}${signupPhone}` });
+          accountStep = 'verify';
+          renderAuthForm();
+          startVerificationTimer();
+          notice.textContent = 'Both codes were accepted for delivery. Enter them within 5 minutes.';
+        } catch (error) {
+          submitButton.disabled = false;
+          notice.textContent = error.message;
+        }
+      } else if (mode === 'create') {
+        const emailCode = document.getElementById('emailCode').value;
+        const phoneCode = document.getElementById('phoneCode').value;
+        const password = document.getElementById('signupPassword').value;
+        notice.textContent = 'Checking both codes…';
+        try {
+          await callEdgeFunction('verify-signup', {
+            email: signupEmail,
+            phone: `${signupCountryCode}${signupPhone}`,
+            emailCode,
+            phoneCode,
+            password,
+          });
+          if (verificationTimer) clearInterval(verificationTimer);
+          verificationTimer = null;
+          const emailForLogin = signupEmail;
+          const passwordForLogin = password;
+          mode = 'signin';
+          accountStep = 'details';
+          title.textContent = 'Welcome to WorldTalk';
+          renderAuthForm();
+          try {
+            await signInWithWorldTalk(emailForLogin, passwordForLogin);
+            openSignedInChatPreview();
+          } catch {
+            notice.textContent = 'Your account was created with both contacts verified. Sign in with your email and password to continue.';
+          }
+        } catch (error) {
+          submitButton.disabled = false;
+          notice.textContent = error.message;
+        }
+      } else {
+        const email = document.getElementById('identity').value.trim();
+        const password = document.getElementById('signinPassword').value;
+        notice.textContent = 'Signing in…';
+        try {
+          await signInWithWorldTalk(email, password);
+          openSignedInChatPreview();
+        } catch (error) {
+          submitButton.disabled = false;
+          notice.textContent = error.message;
+        }
+      }
+    }
+    document.querySelectorAll('[data-mode]').forEach(button => button.addEventListener('click', () => {
+      const nextMode = button.dataset.mode;
+      if (nextMode !== mode || nextMode === 'signin') accountStep = 'details';
+      mode = nextMode;
+      if (verificationTimer) clearInterval(verificationTimer);
+      verificationTimer = null;
+      title.textContent = mode === 'create' ? 'Create your account' : 'Welcome back';
+      notice.textContent = '';
+      renderAuthForm();
+      if (mode === 'create' && accountStep === 'verify' && verificationDeadline) startVerificationTimer(verificationDeadline);
+      wrap.classList.add('open');
+      authFields.querySelector('input')?.focus();
+    }));
+    document.getElementById('googleSignIn').addEventListener('click', continueWithGoogle);
+    document.getElementById('closeAuth').addEventListener('click', () => { wrap.classList.remove('open'); if (verificationTimer) clearInterval(verificationTimer); verificationTimer = null; });
+    wrap.addEventListener('click', event => { if (event.target === wrap) { wrap.classList.remove('open'); if (verificationTimer) clearInterval(verificationTimer); verificationTimer = null; } });
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') { wrap.classList.remove('open'); if (verificationTimer) clearInterval(verificationTimer); verificationTimer = null; } });
+    renderAuthForm();
+    if (supabaseClient) supabaseClient.auth.getSession().then(({ data, error }) => {
+      const session = data?.session;
+      if (error || !session) return;
+      if (session.user?.email_confirmed_at && session.user?.phone_confirmed_at) {
+        saveAuthSession(session);
+        if (window.location.search.includes('code=')) openSignedInChatPreview();
+      } else if (session.user?.email_confirmed_at) {
+        saveAuthSession(session);
+        beginGooglePhoneSetup();
+      }
+    });
+    if (new URLSearchParams(window.location.search).get('signin') === 'required') {
+      mode = 'signin';
+      title.textContent = 'Welcome back';
+      renderAuthForm();
+      if (new URLSearchParams(window.location.search).get('reason') === 'verification') {
+        notice.textContent = 'Only accounts with both email and phone verified can enter the chats.';
+      }
+      wrap.classList.add('open');
+      authFields.querySelector('input')?.focus();
+    }
+    if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
+  </script>
+</body>
+</html>
